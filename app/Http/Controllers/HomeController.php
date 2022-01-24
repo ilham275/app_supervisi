@@ -46,44 +46,122 @@ class HomeController extends Controller
     {
         $jd = Jadwal::all();
         $data = User::all();
+        $dk = Dokumen::where('nip', '=', Auth::user()->nip)->get();
         if(auth()->user()->is_admin == 1){
-        return view('kurikulum.index', compact('data', 'jd'));
-        }
-        return redirect()->back();
-
+        return view('kurikulum.index', compact('data', 'jd', 'dk'));
+         }
+    return redirect()->back();
     }
 
+    public function kuriindexc()
+    {
+        if(auth()->user()->is_admin == 1){
+            return view('kurikulum.createm');
+             }
+
+             return redirect()->back();
+    }
+    
+
+
+    public function kurisuperindex()
+    {
+    $jd = Jadwal::all();
+    $data = User::all();
+    $dk = Dokumen::where('nip', '=', Auth::user()->nip)->get();
+    $sa = Jadwal::where('nip_super', '=', Auth::user()->nip)->pluck('nip_user');
+    $dki = Dokumen::whereIn('nip',  $sa)->get();
+        if(auth()->user()->is_admin == 1){
+            return view('kurikulum.indexsuper', compact('data', 'jd', 'dk', 'dki'));
+        }
+        return redirect()->back();
+        
+    }
+    
     public function kepsek()
     {
+        $jd = Jadwal::where('nip_user', '=', Auth::user()->nip)->get();
+        $dk = Dokumen::where('nip', '=', Auth::user()->nip)->get();
+        $dka = Dokumen::all();
         if(auth()->user()->is_admin == 2){
-        return view('kepsek.index');
+            return view('kepsek.index', compact('jd', 'dk', 'dka'));
         }
         return redirect()->back();
     }
 
-    public function kepseksuper()
+    public function ckepsek()
     {
         if(auth()->user()->is_admin == 2){
-        return view('kepseksuper.index');
+            return view('kepsek.create');
+
         }
         return redirect()->back();
+    }
+    
+    public function kepseksuper()
+    {
+        $sa = Jadwal::where('nip_super', '=', Auth::user()->nip)->pluck('nip_user');
+        $data = Dokumen::whereIn('nip',  $sa)->get();
+        $dk = Dokumen::where('nip', '=', Auth::user()->nip)->get();
+        $jadwal = Jadwal::where('nip_super', '=', Auth::user()->nip)->get();
+        // dd($data);
+        if(auth()->user()->is_admin == 2){
+        return view('kepseksuper.index', compact('jadwal', 'data', 'dk'));
+        }
+        return redirect()->back();
+    }
+
+    public function kepseksuperc()
+    {
+        if(auth()->user()->is_admin == 2){
+        return view('kepseksuper.create');
+        }
+        return redirect()->back();
+    }
+
+    public function skepseksuper(Request $request)
+    {
+        $validasi = $request->validate([
+            'mapel' => 'required|string',
+            'rpp' => 'required|mimes:pdf|max:5120',
+            'embed' => 'required'
+        ]);
+
+        $rpp = time(). '-' .$request->rpp->getClientOriginalName();
+        $request->rpp->move(public_path('files'), $rpp);
+
+        Dokumen::create([
+            'nip' => $request->nip,
+            'mapel' => $request->mapel,
+            'rpp' => $rpp,
+            'embed' => $request->embed,
+        ]);
+
+        return redirect()->route('kepseksuper.index');
     }
 
     public function guru()
     {
+        $jd = Jadwal::where('nip_user', '=', Auth::user()->nip)->get();
         $dk = Dokumen::where('nip', '=', Auth::user()->nip)->get();
         if(auth()->user()->is_admin == 3){
-        return view('guru.index', compact('dk'));
+        return view('guru.index', compact('dk', 'jd'));
         }
         return redirect()->back();
     }
 
     public function gurusuper()
     {
+
+        $sa = Jadwal::where('nip_super', '=', Auth::user()->nip)->pluck('nip_user');
+        $jadwal = Jadwal::where('nip_super', '=', Auth::user()->nip)->get();
+        $data = Dokumen::whereIn('nip',  $sa)->get();
+        $dk = Dokumen::where('nip', '=', Auth::user()->nip)->get();
         if(auth()->user()->is_admin == 3){
-        return view('gurusuper.index');
+        return view('gurusuper.index', compact('jadwal', 'data', 'dk'));
         }
         return redirect()->back();
+
     }
     
     public function tocreate()
@@ -199,11 +277,15 @@ class HomeController extends Controller
 
     public function todokumen()
     {
-
+        if(auth()->user()->is_admin == 1){
+            return view('guru.create');
+        }
         if(auth()->user()->is_admin == 3)
         {
             return view('guru.create');
         }
+        return redirect()->back();
+        
     }
 
     public function dokumen(Request $request)

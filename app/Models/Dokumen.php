@@ -13,6 +13,7 @@ class Dokumen extends Model
         'nip',
         'mapel',
         'rpp',
-        'embed'
+        'embed',
+        'nilai'
     ];
 }

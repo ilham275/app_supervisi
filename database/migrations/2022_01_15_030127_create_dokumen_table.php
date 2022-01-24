@@ -19,6 +19,7 @@ class CreateDokumenTable extends Migration
             $table->string('mapel');
             $table->string('rpp');
             $table->string('embed');
+            $table->string('nilai')->default('BELUM DILIHAT');
             $table->timestamps();
         });
     }

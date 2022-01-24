@@ -57,6 +57,9 @@ class LoginController extends Controller
             //kurikulum
             if (auth()->user()->is_admin == 1) {
                 if(auth()->user()->supervisor == 1){
+                    return redirect()->route('kurikulumsuper.index');
+                }
+                else{
                     return redirect()->route('kurikulum.index');
                 }
             }
@@ -82,8 +85,7 @@ class LoginController extends Controller
 
         }
         else{
-            return redirect()->route('login')
-                ->with('error','NIP Ataw Password Salah');
+            return redirect()->route('login')->with('error','NIP Ataw Password Salah');
         }
 
     }

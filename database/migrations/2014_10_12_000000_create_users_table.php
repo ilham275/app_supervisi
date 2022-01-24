@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('nama');
             $table->string('alamat');
             $table->string('email')->unique();
-            $table->tinyinteger('is_admin')->nullable();
+            $table->tinyinteger('is_admin')->default(3);
             $table->tinyinteger('supervisor')->default(0);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

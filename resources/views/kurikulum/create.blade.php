@@ -73,7 +73,6 @@
                             <div class="col-md-6">
                             <select class="form-control" id="is_admin" name="is_admin" type="text">
                             <option>Pilih Jabatan....</option>
-                                <option value='1'>Kurikulum</option>
                                 <option value='2'>Kepsek</option>
                                 <option value='3'>Guru</option>
                       
